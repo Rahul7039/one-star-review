@@ -15,13 +15,25 @@ MAX_CHARS = 160
 OUTPUT_PATH = "/output/entry.txt"
 
 
+def validate(review: str) -> str:
+    """Return the review if it passes the gates, else raise.
+
+    Explicit checks instead of assert, so validation still runs
+    under `python -O`, where assert statements are stripped.
+    """
+    if not review.strip():
+        raise ValueError("review must not be empty")
+    if "\n" in review:
+        raise ValueError("review must be a single line")
+    if len(review) > MAX_CHARS:
+        raise ValueError(
+            f"review is {len(review)} characters, over the {MAX_CHARS} limit"
+        )
+    return review
+
+
 def main() -> None:
-    review = REVIEW
-    assert review.strip(), "review must not be empty"
-    assert "\n" not in review, "review must be a single line"
-    assert len(review) <= MAX_CHARS, (
-        f"review is {len(review)} characters, over the {MAX_CHARS} limit"
-    )
+    review = validate(REVIEW)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(review)
